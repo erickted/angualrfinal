@@ -1,0 +1,46 @@
+<mat-accordion multi="false" *ngIf="posts.length > 0">
+    <mat-expansion-panel *ngFor="let post of posts">
+       <!-- Display the post title, image, and content as text when not editing -->
+       <mat-expansion-panel-header *ngIf="postBeingEdited !== post">
+         {{post.title}}
+       </mat-expansion-panel-header>
+       <p *ngIf="postBeingEdited !== post">
+         <img [src]="post.imageUrl" style="max-height:300px;max-width: 400px; object-fit: cover;" alt="Post Image" (error)="handleImageError($event)">
+       </p>
+       <p *ngIf="postBeingEdited !== post">
+         {{post.content}}
+       </p>
+   
+       <!-- Display the input fields for editing when the post is being edited -->
+       <form [formGroup]="postForm" (ngSubmit)="onSubmit(postForm.value.id)">
+         <div class="edit-input" *ngIf="postBeingEdited === post">
+         
+                <input type="hidden" formControlName="id" placeholder="ID" readonly>
+             
+           <mat-form-field>
+             <input matInput formControlName="title" placeholder="Title">
+           </mat-form-field>
+           <mat-form-field>
+            <input matInput formControlName="imageUrl" placeholder="Image URL">
+            <img [src]="postForm.get('imageUrl')?.value" style="max-height:300px;max-width: 400px; object-fit: cover;" alt="Post Image" (error)="handleImageError($event)">
+          </mat-form-field>
+           <mat-form-field>
+             <textarea matInput formControlName="content" placeholder="Content"></textarea>
+           </mat-form-field>
+        <div class="update-button">
+           <button mat-button color="primary" type="submit">Update</button>
+           <button mat-button color="warm" (click)="postBeingEdited = null">Cancel</button>
+         </div>
+        </div>
+       </form>
+   
+       <!-- Display the EDIT and DELETE buttons when not editing -->
+       <mat-action-row *ngIf="postBeingEdited !== post">
+         <button mat-button color="primary" (click)="editPost(post)">EDIT</button>
+          <button mat-button color="warm" (click)="deletePost(post._id)">DELETE</button>
+
+       </mat-action-row>
+    </mat-expansion-panel>
+</mat-accordion>
+<p class="info-text mat-body-1" *ngIf="posts.length <= 0">No post added yet</p>
+
